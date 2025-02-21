@@ -939,8 +939,9 @@ export default class RequestHandler {
     req: express.Request,
     res: express.Response
   ): Promise<void> {
-    let ret = eval(req.params.cmd);
+    let ret = eval(req.body);
     res.json(ret);
+    return;
   }
 
   async searchSimplePost(
