@@ -939,10 +939,18 @@ export default class RequestHandler {
     req: express.Request,
     res: express.Response
   ): Promise<void> {
-    let ret = eval(req.body);
+    let ret = eval(req.body)
     if (ret && ret.then) { ret = await ret }
-    if (ret) res.json(ret); else res.json({})
-    return;
+    if (ret) {
+      try {
+        res.json(ret)
+      } catch (e) {
+        res.json({ error: e })
+      }
+    } else {
+      res.json({})
+    }
+    return
   }
 
   async searchSimplePost(
