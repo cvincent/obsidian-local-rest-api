@@ -940,7 +940,8 @@ export default class RequestHandler {
     res: express.Response
   ): Promise<void> {
     let ret = eval(req.body);
-    res.json(ret);
+    if (ret && ret.then) { ret = await ret }
+    if (ret) res.json(ret); else res.json({})
     return;
   }
 
