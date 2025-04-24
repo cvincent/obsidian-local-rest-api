@@ -19,6 +19,7 @@
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = with pkgs; [
           pkgs.nodejs
+          pkgs.typescript
         ];
 
         shellHook = ''
